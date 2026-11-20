@@ -27,6 +27,36 @@ Cargo matches the supplied test name as a substring. These commands run the
 local integration tests; they do not enable the separately gated live-test
 workflow.
 
+## Adding a Focused Regression Test
+
+Follow the patterns the existing suite already uses:
+
+1. **Choose the file.** Integration tests live in `tests/` as `<area>_tests.rs`,
+   one file per area, for example `tests/admin_audit_log_tests.rs` or
+   `tests/ledger_boundary_tests.rs`. Add the test to the file that matches the
+   behavior. Create a new file only when no existing one fits.
+2. **Name the test after the behavior.** Use a descriptive `snake_case` name that
+   states the outcome, such as `audit_entry_includes_admin_address`. Some files
+   use a `test_` prefix, and some don't. Follow the style of the file you edit.
+3. **Assert externally observable behavior.** Check return values, error codes,
+   emitted audit entries, and state read back through public functions. Avoid
+   asserting on private fields or internal call order.
+4. **Use the shared helpers and synthetic data.** Reuse builders such as
+   `tests/boundary_test_helpers.rs` and `tests/sep10_test_util.rs`, and mock
+   responses from `src/mock.rs`. Test fixtures are inputs written for a test.
+   They are not production data, so never copy real user IDs, keys, or live
+   anchor responses into them. Keep the JSON as small as the bug allows.
+5. **Snapshot fixtures.** Deterministic tests write snapshot output to
+   `test_snapshots/<test-file-name>/`, for example
+   `test_snapshots/admin_audit_log_tests/`. Review any snapshot change in the
+   diff before committing it.
+6. **Run only the test you changed.** Select the integration target with
+   `--test` and filter by name:
+
+   ```bash
+   cargo test --test admin_audit_log_tests audit_entry_includes_admin_address
+   ```
+
 ## Property-Based Testing (#643)
 
 Property-based testing generates randomized valid inputs and verifies the system behaves correctly under all conditions.

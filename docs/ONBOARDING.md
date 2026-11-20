@@ -11,7 +11,7 @@ effectively without stepping on anything important.
 1. [Repo overview](#1-repo-overview)
 2. [Prerequisites](#2-prerequisites)
 3. [Local setup](#3-local-setup)
-4. [Key concepts](#4-key-concepts)
+4. [Key concepts](#4-key-concepts) (includes the [Glossary](#glossary))
 5. [Day-to-day workflows](#5-day-to-day-workflows)
 6. [Review and merge checklist](#6-review-and-merge-checklist)
 7. [Release process](#7-release-process)
@@ -132,6 +132,27 @@ migration step in `src/migration.rs`. See
 The contract has a primary admin (set at `initialize`) plus a capability
 delegation system. Capability codes and grant/revoke procedures are documented
 in [`docs/RUNBOOK.md`](RUNBOOK.md#admin-capability-management).
+
+---
+
+### Glossary
+
+Project terms that carry a protocol-specific meaning. Each entry points to the
+canonical document for details.
+
+| Term | Meaning | Canonical reference |
+|------|---------|---------------------|
+| **Anchor** | The off-chain service that SEP-6 and SEP-24 deposit and withdrawal flows run against. Each anchor has an example config under `configs/`. | [ARCHITECTURE.md](ARCHITECTURE.md) |
+| **Attestor** | An address registered with `register_attestor` that may submit attestations. | [CONTRACT_FUNCTIONS.md](CONTRACT_FUNCTIONS.md#attestor-management), [attestor-roles.md](attestor-roles.md) |
+| **Issuer** | In contract calls, the `issuer` argument of `submit_attestation`. `sep10_issuer` on `register_attestor` names the SEP-10 issuer for an attestor's tokens. | [CONTRACT_FUNCTIONS.md](CONTRACT_FUNCTIONS.md#attestations) |
+| **Contract (on-chain)** | The Soroban contract built from `src/contract.rs`. Its entry points are the functions documented in the contract reference. | [CONTRACT_FUNCTIONS.md](CONTRACT_FUNCTIONS.md) |
+| **Host runtime** | The native (`std`) side of the project: the CLI, config loading, response validation, and test harnesses that run outside the on-chain contract. | [ARCHITECTURE.md](ARCHITECTURE.md#native-vs-wasm-split) |
+| **WASM artifact** | The `anchorkit.wasm` file produced by the WASM build (`make wasm`) at `target/wasm32-unknown-unknown/release/`. | [BUILD_TARGETS.md](BUILD_TARGETS.md) |
+| **Schema version** | The version of the on-chain data layout. Read with `get_schema_version` and advanced by `migrate`. | [migration-guide.md](migration-guide.md) |
+| **Primary admin** | The address set by `initialize`. It holds every role and capability implicitly. | [CONTRACT_FUNCTIONS.md](CONTRACT_FUNCTIONS.md#authorization-model) |
+| **Role** | A scoped set of admin operations granted with `grant_role`, such as `KycAdmin` or `AttestorAdmin`. | [CONTRACT_FUNCTIONS.md](CONTRACT_FUNCTIONS.md#authorization-model) |
+| **Capability** | A single fine-grained admin operation granted with `grant_capability`, such as `ManageAttestors`. | [CONTRACT_FUNCTIONS.md](CONTRACT_FUNCTIONS.md#authorization-model) |
+| **SEP-10 JWT** | The EdDSA-signed token that the contract verifies using stored Ed25519 public keys. | [README.md](../README.md#what-it-does) |
 
 ---
 

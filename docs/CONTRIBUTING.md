@@ -10,6 +10,27 @@ AnchorKit enforces consistent code formatting and quality through automated tool
 - **clippy** — Linting and best practices (configured in `.clippy.toml`)
 - **cargo test** — Unit and integration tests
 
+## Before Opening a PR
+
+Copy this block to run the minimum local checks. Every command exists in this
+repository. Commands marked *optional* are not required for a PR.
+
+```bash
+make fmt-check                          # rustfmt check, no files changed
+make lint                               # cargo clippy -- -D warnings
+make test                               # cargo test (default features)
+cargo check --no-default-features       # no_std compile check for the core library
+make wasm                               # WASM build (wasm32-unknown-unknown, --features wasm)
+make doc-lint                           # documentation link and command checks (may install markdownlint-cli via npm)
+
+# Optional: feature-gated mock fixtures (see docs/build-matrix.md)
+cargo test --features mock-only
+
+# Optional: live testnet tests. These need network access and
+# ANCHOR_CONTRACT_ID and ANCHOR_ADMIN_SECRET; they are not required for a PR.
+make smoke-test-live
+```
+
 ## Pre-Commit Validation
 
 Before committing or pushing code, run the complete validation suite:
@@ -194,6 +215,21 @@ the existing ADRs and consider whether a new ADR is needed.
 - [ADR-0001](adr/ADR-0001-record-architecture-decisions.md): Record Architecture Decisions
 - [ADR-0002](adr/ADR-0002-dual-build-strategy.md): Dual-Build Strategy
 - [ADR-0003](adr/ADR-0003-contract-lifecycle-and-schema-versioning.md): Contract Lifecycle and Schema Versioning
+
+## Documentation Ownership Map
+
+When a change affects behavior, check the pages below before opening a PR. Each
+page is the owner of its topic. Link to it rather than repeating its steps.
+
+| If your change touches... | Review these pages |
+|---------------------------|--------------------|
+| Protocol behavior or contract functions | [CONTRACT_FUNCTIONS.md](CONTRACT_FUNCTIONS.md), [error-codes.md](error-codes.md) |
+| Configuration and config validation | [RUNBOOK.md](RUNBOOK.md) (Configuration Validation), [attestor-roles.md](attestor-roles.md), [`configs/`](../configs/) |
+| Contract upgrades and schema changes | [upgrade-playbook.md](upgrade-playbook.md), [migration-guide.md](migration-guide.md) |
+| Release process | [release-checklist.md](release-checklist.md), [release-signing.md](release-signing.md), [changelog-generation.md](changelog-generation.md) |
+| Security-sensitive code (auth, crypto, HTTP, deployment) | [SECURITY_REVIEW_CHECKLIST.md](SECURITY_REVIEW_CHECKLIST.md), [governance-and-security.md](governance-and-security.md) |
+| Service operation | [service-management.md](service-management.md), [RUNBOOK.md](RUNBOOK.md) |
+| Build targets and feature flags | [build-matrix.md](build-matrix.md), [BUILD_TARGETS.md](BUILD_TARGETS.md) |
 
 ## Git Workflow
 
